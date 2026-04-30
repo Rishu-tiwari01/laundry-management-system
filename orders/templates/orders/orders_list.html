@@ -1,0 +1,17 @@
+{% extends 'orders/base.html' %}
+{% block content %}
+<form method="get" class="mb-3 d-flex gap-2">
+<input name="q" class="form-control" placeholder="Search name/phone">
+<select name="status" class="form-select">
+<option value="">All</option>
+<option>RECEIVED</option><option>PROCESSING</option><option>READY</option><option>DELIVERED</option>
+</select>
+<button class="btn btn-dark">Filter</button>
+</form>
+<table class="table table-bordered">
+<tr><th>ID</th><th>Name</th><th>Phone</th><th>Total</th><th>Status</th></tr>
+{% for o in orders %}
+<tr><td>{{ o.order_id }}</td><td>{{ o.customer_name }}</td><td>{{ o.phone }}</td><td>₹{{ o.total_bill }}</td><td>{{ o.status }}</td></tr>
+{% endfor %}
+</table>
+{% endblock %}

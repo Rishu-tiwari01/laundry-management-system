@@ -1,0 +1,57 @@
+ {% extends 'orders/base.html' %}
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">Create New Order</h5>
+      </div>
+
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            {{ form.customer_name.label_tag }}
+            {{ form.customer_name }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.phone.label_tag }}
+            {{ form.phone }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.garment.label_tag }}
+            {{ form.garment }}
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              {{ form.quantity.label_tag }}
+              {{ form.quantity }}
+            </div>
+            <div class="col-md-6 mb-3">
+              {{ form.price_per_item.label_tag }}
+              {{ form.price_per_item }}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            {{ form.status.label_tag }}
+            {{ form.status }}
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <a href="/orders/" class="btn btn-outline-secondary">Back</a>
+            <button class="btn btn-primary">Save Order</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'orders/base.html' %}
+{% block content %}
+
+<div class="container">
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 text-center p-4">
+                <h6 class="text-muted">Total Orders</h6>
+                <h2 class="fw-bold">{{ total_orders }}</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 text-center p-4">
+                <h6 class="text-muted">Total Revenue</h6>
+                <h2 class="fw-bold text-success">₹{{ revenue }}</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 text-center p-4">
+                <h6 class="text-muted">Orders Ready</h6>
+                <h2 class="fw-bold text-primary">
+                    {% for s in status_data %}
+                        {% if s.status == 'READY' %}{{ s.count }}{% endif %}
+                    {% endfor %}
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 p-4">
+        <h5 class="mb-3">Order Status Overview</h5>
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Status</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in status_data %}
+                <tr>
+                    <td>
+                        <span class="badge 
+                            {% if s.status == 'RECEIVED' %}bg-secondary
+                            {% elif s.status == 'PROCESSING' %}bg-warning text-dark
+                            {% elif s.status == 'READY' %}bg-info text-dark
+                            {% elif s.status == 'DELIVERED' %}bg-success
+                            {% endif %}">
+                            {{ s.status }}
+                        </span>
+                    </td>
+                    <td>{{ s.count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}
