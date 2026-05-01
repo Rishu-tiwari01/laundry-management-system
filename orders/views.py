@@ -27,3 +27,6 @@ def orders_list(request):
     if q:
         qs = qs.filter(customer_name__icontains=q) | qs.filter(phone__icontains=q)
     return render(request,'orders/orders_list.html',{'orders':qs})
+
+def home(request):
+    return render(request, 'home.html')
