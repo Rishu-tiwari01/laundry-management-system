@@ -29,4 +29,4 @@ def orders_list(request):
     return render(request,'orders/orders_list.html',{'orders':qs})
 
 def home(request):
-    return render(request, 'home.html')
+    return render(request, 'orders/home.html')
