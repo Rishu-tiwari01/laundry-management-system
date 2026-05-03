@@ -1,32 +1,79 @@
-from django.shortcuts import render, redirect
-from django.db.models import Sum, Count
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.db.models import Sum, Count, Q
 from .models import Order
 from .forms import OrderForm
 
+
 def dashboard(request):
     total_orders = Order.objects.count()
-    revenue = Order.objects.aggregate(Sum('total_bill'))['total_bill__sum'] or 0
+    revenue = Order.objects.aggregate(total=Sum('total_bill'))['total'] or 0
+    pending_orders = Order.objects.exclude(status='DELIVERED').count()
     status_data = Order.objects.values('status').annotate(count=Count('id'))
-    return render(request,'orders/dashboard.html',locals())
+    recent_orders = Order.objects.all()[:5]
+
+    context = {
+        'total_orders': total_orders,
+        'revenue': revenue,
+        'pending_orders': pending_orders,
+        'status_data': status_data,
+        'recent_orders': recent_orders,
+    }
+    return render(request, 'orders/dashboard.html', context)
 
 
 def create_order(request):
-    form = OrderForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('orders_list')
-    return render(request,'orders/create_order.html',{'form':form})
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            order = form.save()
+            messages.success(request, f'Order {order.order_id} created successfully!')
+            return redirect('orders_list')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = OrderForm()
+
+    return render(request, 'orders/create_order.html', {'form': form})
+
+
+def update_order(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+
+    if request.method == 'POST':
+        form = OrderForm(request.POST, instance=order)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Order {order.order_id} updated successfully!')
+            return redirect('orders_list')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = OrderForm(instance=order)
+
+    return render(request, 'orders/update_order.html', {'form': form, 'order': order})
 
 
 def orders_list(request):
-    qs = Order.objects.all().order_by('-id')
-    status = request.GET.get('status')
-    q = request.GET.get('q')
+    qs = Order.objects.all()
+
+    status = request.GET.get('status', '')
+    q = request.GET.get('q', '').strip()
+
     if status:
         qs = qs.filter(status=status)
-    if q:
-        qs = qs.filter(customer_name__icontains=q) | qs.filter(phone__icontains=q)
-    return render(request,'orders/orders_list.html',{'orders':qs})
 
-def home(request):
-    return dashboard(request)
+    if q:
+        qs = qs.filter(
+            Q(customer_name__icontains=q) |
+            Q(phone__icontains=q) |
+            Q(order_id__icontains=q)
+        )
+
+    context = {
+        'orders': qs,
+        'status_choices': Order.STATUS_CHOICES,
+        'current_status': status,
+        'search_query': q,
+    }
+    return render(request, 'orders/orders_list.html', context)
