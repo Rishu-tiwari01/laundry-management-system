@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = False
 
-ALLOWED_HOSTS = ['laundry-management-systemm.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['laundry-management-system-u3b1.onrender.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -74,4 +74,4 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CSRF_TRUSTED_ORIGINS = ['https://laundry-management-systemm.onrender.com']
+CSRF_TRUSTED_ORIGINS = ['https://laundry-management-system-u3b1.onrender.com']
