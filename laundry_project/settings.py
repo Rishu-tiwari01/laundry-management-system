@@ -14,10 +14,12 @@ DEBUG = _env_bool('DEBUG', False)
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 if not SECRET_KEY:
-    if DEBUG:
-        SECRET_KEY = 'dev-secret-key-change-in-production'
-    else:
+    # Render always sets RENDER / RENDER_EXTERNAL_HOSTNAME and provides SECRET_KEY via render.yaml.
+    # If we see those markers, refuse to start without an explicit key; otherwise fall back so
+    # local manage.py commands (check, migrate, runserver, …) work without extra env wiring.
+    if os.environ.get('RENDER') or os.environ.get('RENDER_EXTERNAL_HOSTNAME'):
         raise RuntimeError('SECRET_KEY environment variable must be set in production')
+    SECRET_KEY = 'django-insecure-dev-fallback-set-SECRET_KEY-for-production'
 
 ALLOWED_HOSTS = [
     h.strip()
@@ -122,7 +124,7 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = 60 * 60 * 24 * 30
+    SECURE_HSTS_SECONDS = 60 * 60 * 24 * 365
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     SECURE_CONTENT_TYPE_NOSNIFF = True

@@ -1,6 +1,16 @@
 __pycache__/
 *.pyc
+*.pyo
 db.sqlite3
+db.sqlite3-journal
+*.log
 .env
+.venv/
 venv/
+myenv/
+env/
 staticfiles/
+.DS_Store
+.vscode/
+.idea/
+*.egg-info/

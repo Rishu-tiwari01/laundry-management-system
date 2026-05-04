@@ -1,20 +1,23 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.core.paginator import Paginator
 from django.db.models import Sum, Count, Q
 from .models import Order
 from .forms import OrderForm
 
 
 def dashboard(request):
-    total_orders = Order.objects.count()
-    revenue = Order.objects.aggregate(total=Sum('total_bill'))['total'] or 0
-    pending_orders = Order.objects.exclude(status='DELIVERED').count()
-    status_data = Order.objects.values('status').annotate(count=Count('id'))
+    totals = Order.objects.aggregate(
+        total_orders=Count('id'),
+        revenue=Sum('total_bill'),
+    )
+    status_data = list(Order.objects.values('status').annotate(count=Count('id')))
+    pending_orders = sum(s['count'] for s in status_data if s['status'] != 'DELIVERED')
     recent_orders = Order.objects.all()[:5]
 
     context = {
-        'total_orders': total_orders,
-        'revenue': revenue,
+        'total_orders': totals['total_orders'] or 0,
+        'revenue': totals['revenue'] or 0,
         'pending_orders': pending_orders,
         'status_data': status_data,
         'recent_orders': recent_orders,
@@ -70,8 +73,14 @@ def orders_list(request):
             Q(order_id__icontains=q)
         )
 
+    paginator = Paginator(qs, 25)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
     context = {
-        'orders': qs,
+        'orders': page_obj,
+        'page_obj': page_obj,
+        'paginator': paginator,
+        'total_count': paginator.count,
         'status_choices': Order.STATUS_CHOICES,
         'current_status': status,
         'search_query': q,

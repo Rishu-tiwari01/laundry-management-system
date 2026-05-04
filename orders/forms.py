@@ -1,5 +1,4 @@
 from django import forms
-from django.core.validators import RegexValidator
 from .models import Order
 
 
@@ -43,23 +42,7 @@ class OrderForm(forms.ModelForm):
         return name
 
     def clean_phone(self):
-        phone = self.cleaned_data.get('phone', '').strip()
-        import re
-        if not re.match(r'^\+?[0-9]{10,15}$', phone):
-            raise forms.ValidationError('Enter a valid phone number (10-15 digits)')
-        return phone
-
-    def clean_quantity(self):
-        quantity = self.cleaned_data.get('quantity')
-        if quantity is None or quantity < 1:
-            raise forms.ValidationError('Quantity must be at least 1')
-        return quantity
-
-    def clean_price_per_item(self):
-        price = self.cleaned_data.get('price_per_item')
-        if price is None or price <= 0:
-            raise forms.ValidationError('Price must be greater than 0')
-        return price
+        return self.cleaned_data.get('phone', '').strip()
 
     def clean_garment(self):
         garment = self.cleaned_data.get('garment', '').strip()

@@ -109,6 +109,36 @@
         .form-control.is-invalid, .form-select.is-invalid {
             border-color: #dc2626;
         }
+        .services-carousel {
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+        .services-carousel .carousel-item {
+            min-height: 220px;
+        }
+        .services-carousel .carousel-content {
+            display: flex;
+            align-items: center;
+            min-height: 220px;
+            padding: 2rem 4rem;
+            color: #fff;
+        }
+        .services-carousel .carousel-content h2 { color: #fff; }
+        .services-carousel .carousel-content p {
+            color: rgba(255,255,255,0.92);
+            max-width: 560px;
+        }
+        .services-carousel .carousel-indicators [data-bs-target] {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: none;
+        }
+        @media (max-width: 576px) {
+            .services-carousel .carousel-content { padding: 1.5rem 2.5rem; }
+            .services-carousel .carousel-item { min-height: 260px; }
+        }
     </style>
 </head>
 <body>

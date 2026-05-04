@@ -1,4 +1,5 @@
-from django.db import models
+from django.db import models, transaction
+from django.db.utils import IntegrityError
 from django.core.validators import MinValueValidator, RegexValidator
 import uuid
 
@@ -40,7 +41,17 @@ class Order(models.Model):
         return f"{self.order_id} - {self.customer_name}"
 
     def save(self, *args, **kwargs):
-        if not self.order_id:
-            self.order_id = str(uuid.uuid4()).split('-')[0].upper()
         self.total_bill = self.quantity * self.price_per_item
-        super().save(*args, **kwargs)
+        if self.order_id:
+            super().save(*args, **kwargs)
+            return
+        # 8-hex-char IDs (~4B space) — retry on the rare collision
+        for _ in range(5):
+            self.order_id = uuid.uuid4().hex[:8].upper()
+            try:
+                with transaction.atomic():
+                    super().save(*args, **kwargs)
+                return
+            except IntegrityError:
+                continue
+        raise IntegrityError('Could not generate a unique order_id after 5 attempts')
